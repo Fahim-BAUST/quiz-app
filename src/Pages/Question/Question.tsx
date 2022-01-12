@@ -1,35 +1,37 @@
 
-import { KeyboardArrowLeft, KeyboardArrowRight } from '@mui/icons-material';
-import { Box, Button, Divider, FormControl, FormControlLabel, FormHelperText, MobileStepper, Pagination, Paper, Radio, RadioGroup, TextField, Typography, useTheme } from '@mui/material';
+import { Box, Button, Chip, Divider, FormControl, FormControlLabel, Paper, Radio, RadioGroup, TextField, Typography } from '@mui/material';
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Pie, PieChart, Tooltip } from 'recharts';
 
-const Question = () => {
+const Question: React.FC = () => {
 
     const { language } = useParams<{ language: string }>()
-    let questions: { question: string, types: string, choice: string[], ans: string }[] = [];
+    let questions: { id: number, question: string, types: string, choice: string[], ans: string }[] = [];
 
     language === "english" ? questions = [
         {
+            id: 1,
             question: 'What is the correct command to create a new React project?',
             types: `multipleChoice`,
             choice: ["create react app", "npx create react app", "npx create-react-app my-app", "npx create react app my-app"],
             ans: "npx create-react-app my-app"
         },
         {
+            id: 2,
             question: 'React is based on components. True Or False?',
             types: `multipleChoice`,
             choice: ["True", "False"],
             ans: "true"
         },
         {
+            id: 3,
             question: ' React is mainly used for building ___?',
             types: `blanks`,
             choice: [""],
             ans: "user interface"
         },
         {
+            id: 4,
             question: 'Props Are _______ into other Components?',
             types: `multipleChoice`,
             choice: ["injected", "Methods", "Both A and B", "All of these"],
@@ -37,33 +39,41 @@ const Question = () => {
         }
         ,
         {
-            question: 'Which is the right way of accessing a function fetch() from an h1 element in JSX?',
+            id: 5,
+            question: 'Match the following?',
             types: `multipleChoice`,
-            choice: ["<h1>{fetch()}</h1>", "<h1>${fetch()}</h1>", "<h1>{fetch}</h1>", "<h1>${fetch}</h1>"],
-            ans: "<h1>{fetch}</h1>"
+            choice: ["React -> Facebook & Angular-> Google & Vue-> GitLab",
+                "React -> Google & Angular-> Facebook & Vue-> GitLab",
+                "React -> GitLab & Angular-> Facebook & Vue-> Google",
+                "React -> GitLab & Angular-> Google & Vue-> Facebook"],
+            ans: "React -> Facebook & Angular-> Google & Vue-> GitLab"
         }
     ] :
 
         questions = [
             {
+                id: 1,
                 question: 'একটি নতুন REACT প্রকল্প তৈরি করার সঠিক কমান্ড কি?',
                 types: `multipleChoice`,
                 choice: ["create react app", "npx create react app", "npx create-react-app my-app", "npx create react app my-app"],
                 ans: "npx create-react-app my-app"
             },
             {
+                id: 2,
                 question: 'REACT উপাদানগুলির উপর ভিত্তি করে। সত্য অথবা মিথ্যা?',
                 types: `multipleChoice`,
                 choice: ["সত্য", "মিথ্যা"],
                 ans: "সত্য"
             },
             {
+                id: 3,
                 question: ' REACT প্রধানত নির্মাণের জন্য ব্যবহৃত হয় ___?',
                 types: `blanks`,
                 choice: [""],
                 ans: "ব্যবহারকারী ইন্টারফেস"
             },
             {
+                id: 4,
                 question: 'প্রপগুলি অন্যান্য উপাদানগুলির মধ্যে _______ হয়?',
                 types: `multipleChoice`,
                 choice: ["ইনজেকশন", "পদ্ধতি", "A এবং B উভয়", "এই সবগুলু"],
@@ -71,43 +81,43 @@ const Question = () => {
             }
             ,
             {
+                id: 5,
                 question: 'JSX-এর একটি h1 উপাদান থেকে একটি ফাংশন fetch() অ্যাক্সেস করার সঠিক উপায় যা?',
                 types: `multipleChoice`,
-                choice: ["<h1>{fetch()}</h1>", "<h1>${fetch()}</h1>", "<h1>{fetch}</h1>", "<h1>${fetch}</h1>"],
-                ans: "<h1>{fetch}</h1>"
+                choice: ["React -> Facebook & Angular-> Google & Vue-> GitLab",
+                    "React -> Google & Angular-> Facebook & Vue-> GitLab",
+                    "React -> GitLab & Angular-> Facebook & Vue-> Google",
+                    "React -> GitLab & Angular-> Google & Vue-> Facebook"],
+                ans: "React -> Facebook & Angular-> Google & Vue-> GitLab"
             }
         ];
 
-
-
-    const theme = useTheme();
     const [activeStep, setActiveStep] = React.useState<number>(0);
-    const maxSteps: number = questions.length;
 
-    const handleNext = () => {
-        setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    };
-
-    const handleBack = () => {
-        setActiveStep((prevActiveStep) => prevActiveStep - 1);
-    };
-    const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
-        setActiveStep(value - 1)
+    const questionChange = (questionId: number) => {
+        setActiveStep(questionId)
 
     }
 
-    const [value, setValue] = React.useState<string>('');
-    const [error, setError] = React.useState<boolean>(false);
-    const [helperText, setHelperText] = React.useState<string>('Choose wisely');
+    const isQuestionAnswered = (id: number) => {
 
+        if (id <= userAns.length) {
+            return true
+        }
+        else {
+            return false;
+        }
+
+    }
+
+    const [value, setValue] = React.useState<string>('Not Select');
 
     const [userAns, setUserAns] = useState<string[]>([])
     const userAnswer: string[] = userAns
 
     const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setValue((event.target as HTMLInputElement).value);
-        setHelperText('');
-        setError(false);
+
     };
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -116,57 +126,66 @@ const Question = () => {
         userAnswer[activeStep] = value;
         setUserAns(userAnswer)
 
-        if (value.toLowerCase() === questions[activeStep].ans) {
-            setHelperText('You got it!');
-            setError(false);
-        } else {
-            setHelperText('Wrong answer or select any option.');
-            setError(true);
-        }
+        setActiveStep(activeStep + 1);
+
     };
 
 
-    const [chartsdata, setChartsData] = useState<{ name: string, value: number }[]>([])
     const [loadCharts, setLoadCharts] = React.useState<boolean>(false);
     const [finalScore, setFinalScore] = useState<number>(0)
+    const [writeAns, setWriteAns] = useState<number>(0)
+    const [wrongAns, setWrongAns] = useState<number>(0)
+
 
     const showCharts = () => {
         let score: number = 0;
 
         for (let i = 0; i < userAns.length; i++) {
-            if (userAns[i] === questions[i].ans) {
+            if (userAns[i].toLowerCase() === questions[i].ans.toLowerCase()) {
                 score = score + 1;
             }
 
         }
 
         setFinalScore(score);
-
-        const writeAnswerPercentage = (score * 100) / userAns.length
-        const wrongAnswerPercentage = 100 - writeAnswerPercentage;
-        setChartsData([{ name: 'Write Answer(%)', value: writeAnswerPercentage },
-        { name: 'Wrong Answer(%)', value: wrongAnswerPercentage }])
+        setWriteAns(score)
+        setWrongAns(5 - score);
         setLoadCharts(true);
 
     }
-    console.log(chartsdata);
+
+    const deg = (a: number, b: number) => {
+        return (360 * a) / (a + b);
+    }
 
     return (
-        <Box sx={{
-            mt: 10,
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            flexDirection: 'column'
-        }}>
-            <Box sx={{ maxWidth: 400, flexGrow: 1 }}>
+        <Box
+            data-testid="ques"
+            sx={{
+                mt: 10,
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                flexDirection: 'column'
+            }}>
+            <Box sx={{ maxWidth: 400, flexGrow: 1, display: `${userAns.length === 5 && 'none'}` }}>
                 <Box sx={{
                     display: 'flex',
                     justifyContent: 'center',
 
                     mb: 3
                 }}>
-                    <Pagination onChange={handleChange} count={questions.length} color="secondary" />
+                    {
+                        questions.map((q, i) => (
+                            <Chip
+                                color={isQuestionAnswered(i + 1) ? "error" : "default"}
+                                onClick={() => questionChange(i)}
+                                sx={{ marginRight: "10px", cursor: "pointer" }}
+                                key={q.id}
+                                label={i + 1}
+                            />
+                        ))
+                    }
                 </Box>
                 <Paper
                     square
@@ -179,19 +198,19 @@ const Question = () => {
                         backgroundColor: 'cyan',
                     }}
                 >
-                    <Typography>{questions[activeStep].question}</Typography>
+                    <Typography>{questions[activeStep]?.question}</Typography>
                 </Paper>
 
                 <Box sx={{ height: 255, maxWidth: 400, width: '100%', p: 2 }}>
 
                     {/* for  multiple choice */}
-                    {questions[activeStep].types === "multipleChoice"
+                    {questions[activeStep]?.types === "multipleChoice"
                         &&
                         <form onSubmit={handleSubmit}>
                             <FormControl
                                 sx={{ m: 3 }}
                                 component="fieldset"
-                                error={error}
+
                                 variant="standard"
                             >
                                 <RadioGroup
@@ -207,7 +226,7 @@ const Question = () => {
                                     {questions[activeStep]?.choice[3] && <FormControlLabel value={questions[activeStep]?.choice[3]} control={<Radio />} label={questions[activeStep]?.choice[3]} />}
 
                                 </RadioGroup>
-                                <FormHelperText>{helperText}</FormHelperText>
+
                                 <Button sx={{ mt: 1, mr: 1 }} type="submit" variant="outlined">
                                     select
                                 </Button>
@@ -215,16 +234,16 @@ const Question = () => {
                         </form>
                     }
                     {/* for  Fill In the blanks */}
-                    {questions[activeStep].types === "blanks" &&
+                    {questions[activeStep]?.types === "blanks" &&
                         <form onSubmit={handleSubmit}>
                             <FormControl
                                 sx={{ m: 3 }}
                                 component="fieldset"
-                                error={error}
+
                                 variant="standard"
                             >
                                 <TextField onChange={handleRadioChange} id="input-with-sx" label="Write here" variant="standard" />
-                                <FormHelperText>{helperText}</FormHelperText>
+
                                 <Button sx={{ mt: 1, mr: 1 }} type="submit" variant="outlined">
                                     select
                                 </Button>
@@ -234,46 +253,16 @@ const Question = () => {
                     }
 
                 </Box>
-                <MobileStepper
-                    variant="text"
-                    steps={maxSteps}
-                    position="static"
-                    activeStep={activeStep}
-                    nextButton={
-                        <Button
-                            size="small"
-                            onClick={handleNext}
-                            disabled={activeStep === maxSteps - 1}
-                        >
-                            Next
-                            {theme.direction === 'rtl' ? (
-                                <KeyboardArrowLeft />
-                            ) : (
-                                <KeyboardArrowRight />
-                            )}
-                        </Button>
-                    }
-                    backButton={
-                        <Button size="small" onClick={handleBack} disabled={activeStep === 0}>
-                            {theme.direction === 'rtl' ? (
-                                <KeyboardArrowRight />
-                            ) : (
-                                <KeyboardArrowLeft />
-                            )}
-                            Back
-                        </Button>
-                    }
-                />
 
                 <Divider />
-                <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3, mt: 2 }}>
-                    <Button onClick={showCharts} variant="contained" size="small" disabled={userAns.length === 5 ? false : true}>
-                        submit
-                    </Button>
 
-                </Box >
 
             </Box>
+            <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3, mt: 2 }}>
+                <Button onClick={showCharts} variant="contained" size="small" disabled={userAns.length === 5 ? false : true}>
+                    See Results
+                </Button>
+            </Box >
 
             {
                 loadCharts && <Box>
@@ -289,23 +278,25 @@ const Question = () => {
                 </Box>
             }
 
-            {loadCharts && <Box>
-                <Typography align='center' variant='h3'> Charts</Typography>
-                <PieChart width={400} height={250}>
-                    <Pie
-                        dataKey="value"
-                        isAnimationActive={false}
-                        data={chartsdata}
-                        cx="50%"
-                        cy="50%"
-                        outerRadius={80}
-                        fill="#8884d8"
-                        label
-                    />
 
-                    <Tooltip />
-                </PieChart>
-            </Box>}
+            {
+                loadCharts &&
+                <Box>
+                    <Typography align='center' variant='h4'> <span style={{ color: "green" }}>Write={writeAns}</span> <span style={{ color: "red" }}>Wrong={wrongAns}</span></Typography>
+                    <div
+                        style={{
+                            width: "400px",
+                            height: "400px",
+                            backgroundImage: `conic-gradient(green 0deg ${deg(writeAns, wrongAns)}deg
+                            , red ${deg(writeAns, wrongAns)}deg 360deg)`,
+                            borderRadius: "50%",
+                            margin: "auto"
+                        }}
+                    />
+                </Box>
+            }
+
+
         </Box>
 
     );

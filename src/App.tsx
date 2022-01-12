@@ -5,13 +5,16 @@ import Home from './Pages/Home/Home';
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/quiz/:language" element={<Question />} />
+    <div data-testid="app">
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/quiz/:language" element={<Question />} />
+        </Routes>
+      </BrowserRouter>
 
-      </Routes>
-    </BrowserRouter>
+    </div>
+
 
   );
 }

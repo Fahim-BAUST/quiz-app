@@ -8,7 +8,6 @@ const Home = () => {
 
 
     const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        console.log((event.target as HTMLInputElement).value);
         setLanguage((event.target as HTMLInputElement).value);
 
     };
@@ -18,7 +17,6 @@ const Home = () => {
 
             <Box>
                 <Typography variant='h4'> Please provide this information:- </Typography>
-
 
                 <TextField sx={{ mt: 4 }} id="standard-basic" label="Your Name" variant="standard" /> <br />
                 <TextField sx={{ mt: 1 }} id="standard-basic" label="Your Gender" variant="standard" /> <br />
@@ -33,7 +31,7 @@ const Home = () => {
                     <FormControlLabel value="english" control={<Radio />} label="english" />
 
                 </RadioGroup>
-                <Button onClick={() => navigate(`/quiz/${language}`)} sx={{ mt: 2 }} variant="contained" >Details</Button>
+                <Button onClick={() => navigate(`/quiz/${language}`)} sx={{ mt: 2 }} variant="contained" disabled={language ? false : true}>Start Quiz</Button>
 
             </Box>
 
