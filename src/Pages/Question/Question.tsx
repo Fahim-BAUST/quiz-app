@@ -115,7 +115,7 @@ const Question: React.FC = () => {
     const [userAns, setUserAns] = useState<string[]>([])
     const userAnswer: string[] = userAns
 
-    const [multiSelAns, setMultiSelAns] = useState<string[]>([])
+    const [multiSelAns, setMultiSelAns] = useState<string[]>(['not answered'])
     const multiSel: string[] = multiSelAns
 
     const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -141,7 +141,15 @@ const Question: React.FC = () => {
         event.preventDefault();
 
         if (type === "multipleChoice" || type === "blanks") {
-            userAnswer[activeStep] = value;
+
+            if (userAnswer[activeStep - 1] === value || value.length === 0) {
+                userAnswer[activeStep] = 'not answered';
+            }
+            else {
+                userAnswer[activeStep] = value;
+            }
+
+
             setUserAns(userAnswer)
             setActiveStep(activeStep + 1);
 
