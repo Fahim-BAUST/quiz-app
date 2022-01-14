@@ -1,12 +1,12 @@
 
-import { Box, Button, Chip, Divider, FormControl, FormControlLabel, Paper, Radio, RadioGroup, TextField, Typography } from '@mui/material';
+import { Box, Button, Checkbox, Chip, Divider, FormControl, FormControlLabel, Paper, Radio, RadioGroup, TextField, Typography } from '@mui/material';
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 const Question: React.FC = () => {
 
     const { language } = useParams<{ language: string }>()
-    let questions: { id: number, question: string, types: string, choice: string[], ans: string }[] = [];
+    let questions: { id: number, question: string, types: string, choice: string[], ans: string[] }[] = [];
 
     language === "english" ? questions = [
         {
@@ -14,28 +14,28 @@ const Question: React.FC = () => {
             question: 'What is the correct command to create a new React project?',
             types: `multipleChoice`,
             choice: ["create react app", "npx create react app", "npx create-react-app my-app", "npx create react app my-app"],
-            ans: "npx create-react-app my-app"
+            ans: ["npx create-react-app my-app"]
         },
         {
             id: 2,
             question: 'React is based on components. True Or False?',
             types: `multipleChoice`,
             choice: ["True", "False"],
-            ans: "true"
+            ans: ["true"]
         },
         {
             id: 3,
             question: ' React is mainly used for building ___?',
             types: `blanks`,
             choice: [""],
-            ans: "user interface"
+            ans: ["user interface"]
         },
         {
             id: 4,
             question: 'Props Are _______ into other Components?',
-            types: `multipleChoice`,
+            types: `multiSelect`,
             choice: ["injected", "Methods", "Both A and B", "All of these"],
-            ans: "methods"
+            ans: ["injected", "Methods"]
         }
         ,
         {
@@ -46,7 +46,7 @@ const Question: React.FC = () => {
                 "React -> Google & Angular-> Facebook & Vue-> GitLab",
                 "React -> GitLab & Angular-> Facebook & Vue-> Google",
                 "React -> GitLab & Angular-> Google & Vue-> Facebook"],
-            ans: "React -> Facebook & Angular-> Google & Vue-> GitLab"
+            ans: ["React -> Facebook & Angular-> Google & Vue-> GitLab"]
         }
     ] :
 
@@ -56,28 +56,28 @@ const Question: React.FC = () => {
                 question: 'একটি নতুন REACT প্রকল্প তৈরি করার সঠিক কমান্ড কি?',
                 types: `multipleChoice`,
                 choice: ["create react app", "npx create react app", "npx create-react-app my-app", "npx create react app my-app"],
-                ans: "npx create-react-app my-app"
+                ans: ["npx create-react-app my-app"]
             },
             {
                 id: 2,
                 question: 'REACT উপাদানগুলির উপর ভিত্তি করে। সত্য অথবা মিথ্যা?',
                 types: `multipleChoice`,
                 choice: ["সত্য", "মিথ্যা"],
-                ans: "সত্য"
+                ans: ["সত্য"]
             },
             {
                 id: 3,
                 question: ' REACT প্রধানত নির্মাণের জন্য ব্যবহৃত হয় ___?',
                 types: `blanks`,
                 choice: [""],
-                ans: "ব্যবহারকারী ইন্টারফেস"
+                ans: ["ব্যবহারকারী ইন্টারফেস"]
             },
             {
                 id: 4,
                 question: 'প্রপগুলি অন্যান্য উপাদানগুলির মধ্যে _______ হয়?',
-                types: `multipleChoice`,
+                types: `multiSelect`,
                 choice: ["ইনজেকশন", "পদ্ধতি", "A এবং B উভয়", "এই সবগুলু"],
-                ans: "পদ্ধতি"
+                ans: ["ইনজেকশন", "পদ্ধতি"]
             }
             ,
             {
@@ -88,7 +88,7 @@ const Question: React.FC = () => {
                     "React -> Google & Angular-> Facebook & Vue-> GitLab",
                     "React -> GitLab & Angular-> Facebook & Vue-> Google",
                     "React -> GitLab & Angular-> Google & Vue-> Facebook"],
-                ans: "React -> Facebook & Angular-> Google & Vue-> GitLab"
+                ans: ["React -> Facebook & Angular-> Google & Vue-> GitLab"]
             }
         ];
 
@@ -110,24 +110,49 @@ const Question: React.FC = () => {
 
     }
 
-    const [value, setValue] = React.useState<string>('Not Select');
+    const [value, setValue] = React.useState<string>('');
 
     const [userAns, setUserAns] = useState<string[]>([])
     const userAnswer: string[] = userAns
+
+    const [multiSelAns, setMultiSelAns] = useState<string[]>([])
+    const multiSel: string[] = multiSelAns
 
     const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setValue((event.target as HTMLInputElement).value);
 
     };
 
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+
+    const handleChecked = (op: string, checked: boolean, i: number) => {
+        if (checked) {
+            multiSel[i] = op
+            setMultiSelAns(multiSel)
+        }
+        if (checked === false) {
+            multiSel[i] = ''
+            setMultiSelAns(multiSel)
+        }
+
+
+    }
+
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>, type: string) => {
         event.preventDefault();
 
-        userAnswer[activeStep] = value;
-        setUserAns(userAnswer)
+        if (type === "multipleChoice" || type === "blanks") {
+            userAnswer[activeStep] = value;
+            setUserAns(userAnswer)
+            setActiveStep(activeStep + 1);
 
-        setActiveStep(activeStep + 1);
+        }
+        if (type === "multiSelect") {
+            const joinAns = multiSelAns.join();
+            userAnswer[activeStep] = joinAns;
+            setUserAns(userAnswer)
+            setActiveStep(activeStep + 1);
 
+        }
     };
 
 
@@ -141,9 +166,22 @@ const Question: React.FC = () => {
         let score: number = 0;
 
         for (let i = 0; i < userAns.length; i++) {
-            if (userAns[i].toLowerCase() === questions[i].ans.toLowerCase()) {
-                score = score + 1;
+
+            if (questions[i].types === 'multiSelect') {
+                const ansConcat = questions[i].ans.join();
+
+                if (userAns[i].toLowerCase() === ansConcat.toLowerCase()) {
+                    score = score + 1;
+                }
+
             }
+            else {
+                if (userAns[i].toLowerCase() === questions[i].ans[0].toLowerCase()) {
+                    score = score + 1;
+                }
+
+            }
+
 
         }
 
@@ -157,6 +195,9 @@ const Question: React.FC = () => {
     const deg = (a: number, b: number) => {
         return (360 * a) / (a + b);
     }
+
+
+
 
     return (
         <Box
@@ -206,7 +247,7 @@ const Question: React.FC = () => {
                     {/* for  multiple choice */}
                     {questions[activeStep]?.types === "multipleChoice"
                         &&
-                        <form onSubmit={handleSubmit}>
+                        <form onSubmit={(e) => handleSubmit(e, questions[activeStep]?.types)}>
                             <FormControl
                                 sx={{ m: 3 }}
                                 component="fieldset"
@@ -233,9 +274,41 @@ const Question: React.FC = () => {
                             </FormControl>
                         </form>
                     }
-                    {/* for  Fill In the blanks */}
+                    {/* for  Fill In the multiSelect */}
+                    {questions[activeStep]?.types === "multiSelect" &&
+                        <form onSubmit={(e) => handleSubmit(e, questions[activeStep]?.types)}>
+                            <FormControl
+                                sx={{ m: 3 }}
+                                component="fieldset"
+
+                                variant="standard"
+                            >
+
+                                {
+                                    questions[activeStep]?.choice.map((op, i) => (
+                                        <FormControlLabel
+                                            key={op}
+                                            control={<Checkbox
+                                                // checked={isAns(op)}
+                                                onChange={(e) => handleChecked(op, e.target.checked, i)}
+                                            />}
+                                            label={op}
+                                        />
+                                    ))
+                                }
+
+
+                                <Button sx={{ mt: 1, mr: 1 }} type="submit" variant="outlined">
+                                    select
+                                </Button>
+                            </FormControl>
+                        </form>
+
+                    }
+
+
                     {questions[activeStep]?.types === "blanks" &&
-                        <form onSubmit={handleSubmit}>
+                        <form onSubmit={(e) => handleSubmit(e, questions[activeStep]?.types)}>
                             <FormControl
                                 sx={{ m: 3 }}
                                 component="fieldset"
@@ -273,7 +346,7 @@ const Question: React.FC = () => {
                     </ol>
                     <Typography align='center' variant='h5'>Write Answers:-</Typography>
                     <ol>
-                        {questions?.map(ans => <li>{ans.ans}</li>)}
+                        {questions?.map(ans => <li>{ans.ans.join()}</li>)}
                     </ol>
                 </Box>
             }
