@@ -96,7 +96,6 @@ const Question: React.FC = () => {
 
     const questionChange = (questionId: number) => {
         setActiveStep(questionId)
-
     }
 
     const isQuestionAnswered = (id: number) => {
@@ -134,7 +133,6 @@ const Question: React.FC = () => {
             setMultiSelAns(multiSel)
         }
 
-
     }
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>, type: string) => {
@@ -148,11 +146,8 @@ const Question: React.FC = () => {
             else {
                 userAnswer[activeStep] = value;
             }
-
-
             setUserAns(userAnswer)
             setActiveStep(activeStep + 1);
-
         }
         if (type === "multiSelect") {
             const joinAns = multiSelAns.join();
@@ -181,16 +176,12 @@ const Question: React.FC = () => {
                 if (userAns[i].toLowerCase() === ansConcat.toLowerCase()) {
                     score = score + 1;
                 }
-
             }
             else {
                 if (userAns[i].toLowerCase() === questions[i].ans[0].toLowerCase()) {
                     score = score + 1;
                 }
-
             }
-
-
         }
 
         setFinalScore(score);
@@ -203,8 +194,6 @@ const Question: React.FC = () => {
     const deg = (a: number, b: number) => {
         return (360 * a) / (a + b);
     }
-
-
 
 
     return (
